@@ -1,0 +1,62 @@
+# Build sonuçları
+bin/
+obj/
+
+# Kullanıcı ve yapılandırma dosyaları
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio ile ilgili geçici dosyalar
+.vs/
+.vscode/
+
+# Log ve hata ayıklama dosyaları
+*.log
+*.tlog
+*.pdb
+*.cache
+
+# Paket yöneticisi klasörleri
+node_modules/
+bower_components/
+packages/
+
+# Yayınlanmış dosyalar
+publish/
+*.publishsettings
+
+# Resharper, Rider gibi IDE ayar dosyaları
+_ReSharper*/
+*.DotSettings.user
+
+# Sistem dosyaları
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IIS ayar dosyaları
+*.vspscc
+*.vssscc
+
+# Temporary ASP.NET dosyaları
+*.dbmdl
+*.jfm
+
+# Assembly Binding Log dosyaları
+fusionlog.txt
+
+# Web.config ve appsettings dosyalarının yerel versiyonları (eğer gerekirse)
+appsettings.Development.json
+appsettings.Local.json
+
+# İşletim sistemine özel dosyalar
+*.swp
+*.swo
+*.bak
+*.tmp
+~$*
+
+# Windows ek dosyaları
+*.lnk
