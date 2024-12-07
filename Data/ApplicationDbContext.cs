@@ -16,7 +16,22 @@ namespace WebProject.DbRelated
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Store> Stores { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
-       
+            // Seed Admin User
+            modelBuilder.Entity<User>().HasData(new User
+            {
+                Id = 1,
+                FirstName = "Admin",
+                LastName = "User",
+                Email = "b221210585@sakarya.edu.tr",
+                Password = "sau",
+                Role = "Admin"
+            });
+        }
+
+
     }
 }
