@@ -1,0 +1,45 @@
+﻿@model WebProject.Models.Service
+
+<h1>Edit Service</h1>
+
+<form asp-action="Edit" method="post" class="card p-4">
+    <input type="hidden" asp-for="Id" />
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Service Name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Duration" class="form-label">Duration (in minutes)</label>
+        <input asp-for="Duration" class="form-control" />
+        <span asp-validation-for="Duration" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label">Price</label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="SpecializationRequired" class="form-label">Specialization Required</label>
+        <select asp-for="SpecializationRequired" class="form-select">
+            <option value="">-- Select Specialization --</option>
+            @foreach (var employee in ViewBag.Employees)
+            {
+                @if (Model.SpecializationRequired == employee.SpecializationAreas)
+                {
+                    <option value="@employee.SpecializationAreas" selected>
+                        @employee.SpecializationAreas
+                    </option>
+                }
+                else
+                {
+                    <option value="@employee.SpecializationAreas">
+                        @employee.SpecializationAreas
+                    </option>
+                }
+            }
+        </select>
+        <span asp-validation-for="SpecializationRequired" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>

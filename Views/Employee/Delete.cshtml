@@ -1,0 +1,16 @@
+﻿@model WebProject.Models.Employee
+
+<h1>Delete Employee</h1>
+<p>Are you sure you want to delete this employee?</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div>
+        <h3>@Model.FirstName @Model.LastName</h3>
+        <p>Specialization: @Model.SpecializationAreas</p>
+        <p>Phone: @Model.PhoneNumber</p>
+        <p>Address: @Model.Address</p>
+    </div>
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

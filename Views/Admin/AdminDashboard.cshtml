@@ -2,6 +2,9 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<h1>Welcome, Admin!</h1>
-<p>Manage users, appointments, and services here.</p>
-
+<h1>Admin Dashboard</h1>
+<p>Manage your application here:</p>
+<ul>
+    <li><a asp-action="Index" asp-controller="Employee">Manage Employees</a></li>
+    <li><a asp-action="Index" asp-controller="Service">Manage Services</a></li>
+</ul>
