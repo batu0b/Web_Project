@@ -1,29 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using WebProject.Models;
-namespace WebProject.Models
+
+namespace Odev.Models
 {
     public class Appointment
     {
+        [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Employee selection is required.")]
+        [Required]
+        public DateTime AppointmentDate { get; set; }
+
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+        public ApplicationUser? User { get; set; }
+
+        [Required]
         public int EmployeeId { get; set; }
-        public Employee Employee { get; set; }
+        public Employee? Employee { get; set; }
 
-        [Required(ErrorMessage = "Service selection is required.")]
-        public int ServiceId { get; set; }
-        public Service Service { get; set; }
+        [DataType(DataType.DateTime)] 
+        public DateTime? ApprovalDate { get; set; }
 
-        [Required(ErrorMessage = "Date selection is required.")]
-        [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
+        public ICollection<AppointmentService>? AppointmentServices { get; set; }
 
-        [Required(ErrorMessage = "Time selection is required.")]
-        [DataType(DataType.Time)]
-        public TimeSpan Time { get; set; }
-
-        [Required(ErrorMessage = "User ID is required.")]
-        public int UserId { get; set; }
-        public User User { get; set; }
+        public bool IsApproved { get; set; } = false; // Varsayılan olarak onaysız.
     }
 }

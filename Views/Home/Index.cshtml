@@ -1,12 +1,28 @@
 ﻿@{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Welcome";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome to Our Website!</h1>
-    <p class="lead">Your one-stop solution for salon management.</p>
-    <p>
-        <a class="btn btn-primary btn-lg" asp-action="Register" asp-controller="User" role="button">Register</a>
-        <a class="btn btn-secondary btn-lg" asp-action="Login" asp-controller="User" role="button">Login</a>
-    </p>
+<div class="text-center mt-5">
+    <h1 class="display-4">Hoş Geldiniz</h1>
+    <div class="mt-4">
+        @if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <!-- Kullanıcı giriş yaptıysa -->
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="btn btn-warning btn-lg" href="@Url.Action("Index", "Admin")">Yönetim Paneli</a>
+            }
+            else if (User.IsInRole("User"))
+            {
+                <a class="btn btn-primary btn-lg" href="@Url.Action("Create", "Appointment")">Randevu Al</a>
+                <a class="btn btn-info btn-lg ms-2" href="@Url.Action("GetApprovedAppointments", "Appointment")">Onaylanan Randevularım</a>
+            }
+        }
+        else
+        {
+            <!-- Kullanıcı giriş yapmadıysa -->
+            <a class="btn btn-primary btn-lg" href="@Url.Action("Login", "Account")">Giriş Yap</a>
+            <a class="btn btn-success btn-lg ms-2" href="@Url.Action("Register", "Account")">Kayıt Ol</a>
+        }
+    </div>
 </div>

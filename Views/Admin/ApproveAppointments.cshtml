@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Odev.Models.Appointment>
+
+<div class="container mt-5">
+    <h2 class="text-center">Randevuları Onayla</h2>
+    <table class="table table-bordered mt-4">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Müşteri</th>
+                <th>Çalışan</th>
+                <th>Tarih</th>
+                <th>Durum</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var appointment in Model)
+            {
+                <tr>
+                    <td>@appointment.Id</td>
+                    <td>@appointment.User?.FullName</td>
+                    <td>@appointment.Employee?.Name</td>
+                    <td>@appointment.AppointmentDate.ToString("g")</td>
+                    <td>@(appointment.IsApproved ? "Onaylandı" : "Onay Bekliyor")</td>
+                    <td>
+                        @if (!appointment.IsApproved)
+                        {
+                            <form asp-action="ApproveAppointment" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@appointment.Id" />
+                                <button type="submit" class="btn btn-success btn-sm">Onayla</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
