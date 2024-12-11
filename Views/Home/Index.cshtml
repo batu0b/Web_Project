@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Welcome";
+}
+
+<div class="text-center mt-5">
+    <h1 class="display-4">Hoş Geldiniz</h1>
+    <div class="mt-4">
+        @if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <!-- Kullanıcı giriş yaptıysa -->
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="btn btn-warning btn-lg" href="@Url.Action("Index", "Admin")">Yönetim Paneli</a>
+            }
+            else if (User.IsInRole("User"))
+            {
+                <a class="btn btn-primary btn-lg" href="@Url.Action("Create", "Appointment")">Randevu Al</a>
+            }
+        }
+        else
+        {
+            <!-- Kullanıcı giriş yapmadıysa -->
+            <a class="btn btn-primary btn-lg" href="@Url.Action("Login", "Account")">Giriş Yap</a>
+            <a class="btn btn-success btn-lg ms-2" href="@Url.Action("Register", "Account")">Kayıt Ol</a>
+        }
+    </div>
+</div>

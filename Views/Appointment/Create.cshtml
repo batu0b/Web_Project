@@ -1,0 +1,44 @@
+﻿@model Odev.Models.Appointment
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randevu Oluştur</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Randevu Oluştur</h2>
+        <form asp-action="Create" method="post" class="mt-4">
+            <div class="mb-3">
+                <label for="AppointmentDate" class="form-label">Tarih ve Saat</label>
+                <input asp-for="AppointmentDate" type="datetime-local" class="form-control" required />
+                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label for="EmployeeId" class="form-label">Çalışan Seç</label>
+                <select asp-for="EmployeeId" class="form-select" required>
+                    <option value="">Çalışan Seçin</option>
+                    @foreach (var employee in (IEnumerable<Odev.Models.Employee>)ViewData["Employees"])
+                    {
+                        <option value="@employee.Id">@employee.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="EmployeeId" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label for="ServiceIds" class="form-label">Servis Seç</label>
+                <select id="ServiceIds" name="serviceIds" multiple class="form-select" required>
+                    @foreach (var service in (IEnumerable<Odev.Models.Service>)ViewData["Services"])
+                    {
+                        <option value="@service.Id">@service.Name (@service.Price ₺)</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Randevu Oluştur</button>
+        </form>
+    </div>
+</body>
+</html>
