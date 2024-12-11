@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Odev.Data;
 using Odev.Models;
 using Microsoft.EntityFrameworkCore;
+using Odev.ViewModels;
 
 namespace Odev.Controllers
 {
@@ -28,34 +29,50 @@ namespace Odev.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Appointment appointment, int[] serviceIds)
+        public async Task<IActionResult> Create(AppointmentViewModel viewModel, int[] serviceIds)
         {
             if (ModelState.IsValid)
             {
                 // Geçmiş tarih kontrolü
-                if (appointment.AppointmentDate < DateTime.Now)
+                if (viewModel.Date < DateTime.Now)
                 {
                     ModelState.AddModelError("", "Geçmiş bir tarih için randevu oluşturamazsınız.");
                     await FillViewDataAsync(null);
-                    return View(appointment);
+                    return View(viewModel);
                 }
 
                 // Çalışan uygunluk kontrolü
                 var isEmployeeAvailable = !await _context.Appointments
-                    .AnyAsync(a => a.EmployeeId == appointment.EmployeeId &&
-                                   a.AppointmentDate == appointment.AppointmentDate);
+                    .AnyAsync(a => a.EmployeeId == viewModel.EmployeeId &&
+                                   a.AppointmentDate == viewModel.Date);
 
                 if (!isEmployeeAvailable)
                 {
                     ModelState.AddModelError("", "Seçilen çalışan bu tarih ve saat için uygun değil.");
                     await FillViewDataAsync(null);
-                    return View(appointment);
+                    return View(viewModel);
                 }
 
-                // Kullanıcı ve randevu kaydı
+                // Kullanıcı bilgisi alınıyor
                 var user = await _userManager.GetUserAsync(User);
-                appointment.UserId = user.Id;
+                if (user == null)
+                {
+                    ModelState.AddModelError("", "Kullanıcı oturumu bulunamadı. Lütfen giriş yapın.");
+                    await FillViewDataAsync(null);
+                    return View(viewModel);
+                }
 
+                // Appointment nesnesini doldur
+                var appointment = new Appointment
+                {
+                    AppointmentDate = viewModel.Date,
+                    EmployeeId = viewModel.EmployeeId,
+                    UserId = user.Id,
+                    IsApproved = false, // Varsayılan olarak onaysız
+                    ApprovalDate = null // İlk başta null
+                };
+
+                // Randevu kaydı
                 _context.Appointments.Add(appointment);
                 await _context.SaveChangesAsync();
 
@@ -74,9 +91,41 @@ namespace Odev.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // Hata mesajlarını logla
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
+
             await FillViewDataAsync(null);
-            return View(appointment);
+            return View(viewModel);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetApprovedAppointments()
+        {
+            // Oturum açmış kullanıcı bilgisi alınıyor
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized("Kullanıcı oturumu bulunamadı. Lütfen giriş yapın.");
+            }
+
+            // Kullanıcıya ait onaylanmış randevuları getir
+            var approvedAppointments = await _context.Appointments
+                .Include(a => a.Employee) // Çalışan bilgilerini dahil et
+                .Include(a => a.AppointmentServices)
+                .ThenInclude(a => a.Service) // Servis bilgilerini dahil et
+                .Where(a => a.UserId == user.Id && a.IsApproved)
+                .ToListAsync();
+
+            return View(approvedAppointments); // View'e yönlendir
+        }
+
+
 
         // ViewData'yı doldurmak için yardımcı metot
         private async Task FillViewDataAsync(DateTime? selectedDate)

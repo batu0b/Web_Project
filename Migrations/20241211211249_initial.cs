@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Odev.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -239,7 +239,7 @@ namespace Odev.Migrations
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
-                    ApprovalDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ApprovalDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     IsApproved = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>

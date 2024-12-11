@@ -225,7 +225,6 @@ namespace Odev.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("ApprovalDate")
-                        .IsRequired()
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("EmployeeId")

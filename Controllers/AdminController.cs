@@ -74,6 +74,7 @@ namespace Odev.Controllers
             if (appointment != null)
             {
                 appointment.IsApproved = true;
+                appointment.ApprovalDate = DateTime.Today;
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction("ApproveAppointments");

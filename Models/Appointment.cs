@@ -18,8 +18,7 @@ namespace Odev.Models
         public int EmployeeId { get; set; }
         public Employee? Employee { get; set; }
 
-        [Required]
-        [DataType(DataType.DateTime)] // Doğru DataType kullanımı
+        [DataType(DataType.DateTime)] 
         public DateTime? ApprovalDate { get; set; }
 
         public ICollection<AppointmentService>? AppointmentServices { get; set; }

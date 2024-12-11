@@ -11,8 +11,8 @@ using Odev.Data;
 namespace Odev.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241211174744_Initial")]
-    partial class Initial
+    [Migration("20241211211249_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -227,7 +227,6 @@ namespace Odev.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("ApprovalDate")
-                        .IsRequired()
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("EmployeeId")

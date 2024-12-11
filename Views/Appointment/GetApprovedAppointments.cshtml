@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Odev.Models.Appointment>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onaylanmış Randevular</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Onaylanmış Randevularınız</h2>
+
+        @if (!Model.Any())
+        {
+            <p class="text-center text-muted">Henüz onaylanmış bir randevunuz yok.</p>
+        }
+        else
+        {
+            <table class="table table-striped mt-4">
+                <thead>
+                    <tr>
+                        <th>Tarih ve Saat</th>
+                        <th>Çalışan</th>
+                        <th>Servisler</th>
+                        <th>Onay Tarihi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var appointment in Model)
+                    {
+                        <tr>
+                            <td>@appointment.AppointmentDate</td>
+                            <td>@appointment.Employee?.Name</td>
+                            <td>
+                                <ul>
+                                    @foreach (var service in appointment.AppointmentServices.Select(a => a.Service))
+                                    {
+                                        <li>@service?.Name (@service?.Price.ToString("F2") ₺)</li>
+                                    }
+                                </ul>
+                            </td>
+                            <td>@appointment.ApprovalDate?.ToString("dd.MM.yyyy HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</body>
+</html>

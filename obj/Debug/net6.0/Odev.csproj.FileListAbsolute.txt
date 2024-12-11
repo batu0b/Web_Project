@@ -42,3 +42,4 @@ C:\Users\batuh\Desktop\Web_Odev\ODEV\Odev\obj\Debug\net6.0\Odev.pdb
 C:\Users\batuh\Desktop\Web_Odev\ODEV\Odev\obj\Debug\net6.0\Odev.genruntimeconfig.cache
 C:\Users\batuh\Desktop\Web_Odev\ODEV\Odev\obj\Debug\net6.0\ref\Odev.dll
 C:\Users\batuh\Desktop\Web_Odev\ODEV\ODEV\obj\Debug\net6.0\staticwebassets.upToDateCheck.txt
+C:\Users\batuh\Desktop\Web_Odev\ODEV\ODEV\obj\Debug\net6.0\Odev.sourcelink.json

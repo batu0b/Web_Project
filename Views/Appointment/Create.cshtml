@@ -1,4 +1,4 @@
-﻿@model Odev.Models.Appointment
+﻿@model Odev.ViewModels.AppointmentViewModel
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,31 +12,44 @@
     <div class="container mt-5">
         <h2 class="text-center">Randevu Oluştur</h2>
         <form asp-action="Create" method="post" class="mt-4">
+            <!-- Tarih ve Saat -->
             <div class="mb-3">
-                <label for="AppointmentDate" class="form-label">Tarih ve Saat</label>
-                <input asp-for="AppointmentDate" type="datetime-local" class="form-control" required />
-                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                <label for="Date" class="form-label">Tarih ve Saat</label>
+                <input asp-for="Date" type="datetime-local" class="form-control" id="Date" required />
+                <span asp-validation-for="Date" class="text-danger"></span>
             </div>
+
+            <!-- Çalışan Seçimi -->
             <div class="mb-3">
                 <label for="EmployeeId" class="form-label">Çalışan Seç</label>
-                <select asp-for="EmployeeId" class="form-select" required>
+                <select asp-for="EmployeeId" class="form-select" id="EmployeeId" required>
                     <option value="">Çalışan Seçin</option>
-                    @foreach (var employee in (IEnumerable<Odev.Models.Employee>)ViewData["Employees"])
+                    @if (ViewData["Employees"] is IEnumerable<Odev.Models.Employee> employees)
                     {
-                        <option value="@employee.Id">@employee.Name</option>
+                        foreach (var employee in employees)
+                        {
+                            <option value="@employee.Id">@employee.Name</option>
+                        }
                     }
                 </select>
                 <span asp-validation-for="EmployeeId" class="text-danger"></span>
             </div>
+
+            <!-- Servis Seçimi -->
             <div class="mb-3">
                 <label for="ServiceIds" class="form-label">Servis Seç</label>
                 <select id="ServiceIds" name="serviceIds" multiple class="form-select" required>
-                    @foreach (var service in (IEnumerable<Odev.Models.Service>)ViewData["Services"])
+                    @if (ViewData["Services"] is IEnumerable<Odev.Models.Service> services)
                     {
-                        <option value="@service.Id">@service.Name (@service.Price ₺)</option>
+                        foreach (var service in services)
+                        {
+                            <option value="@service.Id">@service.Name (@service.Price.ToString("F2") ₺)</option>
+                        }
                     }
                 </select>
             </div>
+
+            <!-- Form Gönderme Butonu -->
             <button type="submit" class="btn btn-primary w-100">Randevu Oluştur</button>
         </form>
     </div>
