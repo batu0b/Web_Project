@@ -2,8 +2,8 @@
     ViewData["Title"] = "Welcome";
 }
 
-<div class="text-center mt-5">
-    <h1 class="display-4">Hoş Geldiniz</h1>
+<div class="text-center mt-5 d-flex flex-column gap-3 justify-content-center">
+    <h1 class="display-4">Kendrick Kuafor Salonuna Hoş Geldiniz</h1>
     <div class="mt-4">
         @if (User.Identity?.IsAuthenticated ?? false)
         {
@@ -15,7 +15,7 @@
             else if (User.IsInRole("User"))
             {
                 <a class="btn btn-primary btn-lg" href="@Url.Action("Create", "Appointment")">Randevu Al</a>
-                <a class="btn btn-info btn-lg ms-2" href="@Url.Action("GetApprovedAppointments", "Appointment")">Onaylanan Randevularım</a>
+                <a class="btn btn-info btn-lg ms-2" href="@Url.Action("GetAppointments", "Appointment")">Randevularım</a>
             }
         }
         else
@@ -25,4 +25,8 @@
             <a class="btn btn-success btn-lg ms-2" href="@Url.Action("Register", "Account")">Kayıt Ol</a>
         }
     </div>
+    <div class="align-content-center">
+        <img  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT834ZvvhdypBSI3qtoOfPOXUNq6M51HmMxiw&s" />
+    </div>
+
 </div>

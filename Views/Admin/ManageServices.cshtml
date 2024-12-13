@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Odev.Models.Service>
+
+<div class="container mt-5">
+    <h2 class="text-center">Servisleri Yönet</h2>
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ad</th>
+                <th>Fiyat</th>
+                <th>Süre (Dakika)</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var service in Model)
+            {
+                <tr>
+                    <td>@service.Id</td>
+                    <td>@service.Name</td>
+                    <td>@service.Price.ToString("F2") ₺</td>
+                    <td>@service.Duration</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editServiceModal" onclick="loadEditServiceModal(@service.Id)">Güncelle</button>
+                        <form asp-action="DeleteService" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@service.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bu servisi silmek istediğinize emin misiniz?');">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Güncelle Modal -->
+<div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id="editServiceModalContent"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadEditServiceModal(serviceId) {
+        $.get("/Admin/EditService/" + serviceId, function (data) {
+            $("#editServiceModalContent").html(data);
+        });
+    }
+</script>

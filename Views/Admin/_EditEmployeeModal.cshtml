@@ -1,0 +1,38 @@
+﻿@model Odev.Models.Employee
+
+<div class="modal-header">
+    <h5 class="modal-title" id="editEmployeeModalLabel">Çalışan Güncelle</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form asp-action="EditEmployee" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <!-- Çalışan Adı -->
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Ad</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <!-- Servis Seçimi -->
+        <div class="mb-3">
+            <label class="form-label">Yapabileceği Servisler</label>
+            <select id="ServiceIds" name="serviceIds" multiple class="form-select">
+                @if (ViewData["Services"] is IEnumerable<Odev.Models.Service> services)
+                {
+                    foreach (var service in services)
+                    {
+                        var isSelected = Model.EmployeeServices?.Any(es => es.ServiceId == service.Id) ?? false;
+                        <option value="@service.Id" selected="@(isSelected ? "selected" : null)">@service.Name (@service.Duration dakika)</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+        </div>
+    </form>
+</div>

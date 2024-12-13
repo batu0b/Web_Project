@@ -9,11 +9,12 @@ namespace Odev.Models
         [Required]
         public string Name { get; set; } = string.Empty;
 
-        public string Position { get; set; } = string.Empty;
 
         public ICollection<Appointment>? Appointments
         {
             get; set;
         }
+
+        public ICollection<EmployeeService>? EmployeeServices { get; set; }
     }
 }

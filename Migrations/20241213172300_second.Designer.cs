@@ -11,8 +11,8 @@ using Odev.Data;
 namespace Odev.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241211211249_initial")]
-    partial class initial
+    [Migration("20241213172300_second")]
+    partial class second
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -286,6 +286,9 @@ namespace Odev.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("Duration")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")

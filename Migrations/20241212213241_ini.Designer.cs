@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Odev.Data;
 
@@ -10,9 +11,10 @@ using Odev.Data;
 namespace Odev.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241212213241_ini")]
+    partial class ini
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -271,33 +273,19 @@ namespace Odev.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.ToTable("Employees");
-                });
-
-            modelBuilder.Entity("Odev.Models.EmployeeService", b =>
-                {
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("EmployeeId", "ServiceId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("EmployeeServices");
                 });
 
             modelBuilder.Entity("Odev.Models.Service", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("Duration")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -401,25 +389,6 @@ namespace Odev.Migrations
                     b.Navigation("Service");
                 });
 
-            modelBuilder.Entity("Odev.Models.EmployeeService", b =>
-                {
-                    b.HasOne("Odev.Models.Employee", "Employee")
-                        .WithMany("EmployeeServices")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Odev.Models.Service", "Service")
-                        .WithMany("EmployeeServices")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("Service");
-                });
-
             modelBuilder.Entity("Odev.Models.Appointment", b =>
                 {
                     b.Navigation("AppointmentServices");
@@ -428,15 +397,11 @@ namespace Odev.Migrations
             modelBuilder.Entity("Odev.Models.Employee", b =>
                 {
                     b.Navigation("Appointments");
-
-                    b.Navigation("EmployeeServices");
                 });
 
             modelBuilder.Entity("Odev.Models.Service", b =>
                 {
                     b.Navigation("AppointmentServices");
-
-                    b.Navigation("EmployeeServices");
                 });
 #pragma warning restore 612, 618
         }

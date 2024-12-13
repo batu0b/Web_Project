@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Odev.Models.Employee>
+
+<div class="container mt-5">
+    <h2 class="text-center">Çalışanları Yönet</h2>
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ad</th>
+                <th>Yapabileceği Servisler</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td>@employee.Id</td>
+                    <td>@employee.Name</td>
+                    <td>
+                        @if (employee.EmployeeServices?.Any() ?? false)
+                        {
+                            <ul>
+                                @foreach (var service in employee.EmployeeServices.Select(es => es.Service))
+                                {
+                                    <li>@service?.Name (@service?.Duration dakika)</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Servis atanmadı</span>
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editEmployeeModal" onclick="loadEditEmployeeModal(@employee.Id)">Güncelle</button>
+                        <form asp-action="DeleteEmployee" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@employee.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bu çalışanı silmek istediğinize emin misiniz?');">Sil</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Güncelle Modal -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id="editEmployeeModalContent"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadEditEmployeeModal(employeeId) {
+        $.get("/Admin/EditEmployee/" + employeeId, function (data) {
+            $("#editEmployeeModalContent").html(data);
+        });
+    }
+</script>

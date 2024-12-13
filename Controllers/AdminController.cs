@@ -41,24 +41,41 @@ namespace Odev.Controllers
             return View(service);
         }
 
-        // Çalışan ekleme işlemleri
         public IActionResult AddEmployee()
         {
+            ViewData["Services"] = _context.Services.ToList();
             return View();
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddEmployee(Employee employee)
+        public async Task<IActionResult> AddEmployee(Employee employee, int[] serviceIds)
         {
             if (ModelState.IsValid)
             {
                 _context.Employees.Add(employee);
                 await _context.SaveChangesAsync();
+
+                // Çalışan ile seçilen servisleri ilişkilendirme
+                foreach (var serviceId in serviceIds)
+                {
+                    var employeeService = new EmployeeService
+                    {
+                        EmployeeId = employee.Id,
+                        ServiceId = serviceId
+                    };
+                    _context.EmployeeServices.Add(employeeService);
+                }
+
+                await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
+
+            ViewData["Services"] = _context.Services.ToList();
             return View(employee);
         }
+    
 
         // Randevuları onaylama işlemleri
         public async Task<IActionResult> ApproveAppointments()
@@ -79,5 +96,144 @@ namespace Odev.Controllers
             }
             return RedirectToAction("ApproveAppointments");
         }
+
+        // Servisleri listeleme işlemi
+        public async Task<IActionResult> ManageServices()
+        {
+            var services = await _context.Services.ToListAsync();
+            return View(services);
+        }
+
+        // Servis güncelleme işlemi (Get)
+        public async Task<IActionResult> EditService(int id)
+        {
+            var service = await _context.Services.FindAsync(id);
+            if (service == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditServiceModal", service);
+        }
+
+        // Servis güncelleme işlemi (Post)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditService(Service service)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Services.Update(service);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("ManageServices");
+            }
+            return PartialView("_EditServiceModal", service);
+        }
+
+        // Servis silme işlemi
+        [HttpPost]
+        public async Task<IActionResult> DeleteService(int id)
+        {
+            var service = await _context.Services.FindAsync(id);
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            _context.Services.Remove(service);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("ManageServices");
+        }
+
+        public async Task<IActionResult> ManageEmployees()
+        {
+            var employees = await _context.Employees
+                .Include(e => e.EmployeeServices) // Çalışan ile ilişkilendirilmiş servisleri dahil et
+                .ThenInclude(es => es.Service)   // Servis bilgilerini dahil et
+                .ToListAsync();
+
+            return View(employees);
+        }
+
+
+        // Çalışan güncelleme işlemi (Get)
+        public async Task<IActionResult> EditEmployee(int id)
+        {
+            var employee = await _context.Employees
+                .Include(e => e.EmployeeServices)
+                .ThenInclude(es => es.Service)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Services"] = await _context.Services.ToListAsync();
+            return PartialView("_EditEmployeeModal", employee);
+        }
+
+
+        // Çalışan güncelleme işlemi (Post)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditEmployee(Employee employee, int[] serviceIds)
+        {
+            if (ModelState.IsValid)
+            {
+                // Çalışan bilgilerini güncelle
+                _context.Employees.Update(employee);
+                await _context.SaveChangesAsync();
+
+                // Çalışanın servislerini güncelle
+                var existingServices = await _context.EmployeeServices
+                    .Where(es => es.EmployeeId == employee.Id)
+                    .ToListAsync();
+
+                // Var olan servislerden kaldırılacakları sil
+                foreach (var existingService in existingServices)
+                {
+                    if (!serviceIds.Contains(existingService.ServiceId))
+                    {
+                        _context.EmployeeServices.Remove(existingService);
+                    }
+                }
+
+                // Yeni servisleri ekle
+                foreach (var serviceId in serviceIds)
+                {
+                    if (!existingServices.Any(es => es.ServiceId == serviceId))
+                    {
+                        var newEmployeeService = new EmployeeService
+                        {
+                            EmployeeId = employee.Id,
+                            ServiceId = serviceId
+                        };
+                        _context.EmployeeServices.Add(newEmployeeService);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("ManageEmployees");
+            }
+
+            ViewData["Services"] = await _context.Services.ToListAsync();
+            return PartialView("_EditEmployeeModal", employee);
+        }
+
+        // Çalışan silme işlemi
+        [HttpPost]
+        public async Task<IActionResult> DeleteEmployee(int id)
+        {
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            _context.Employees.Remove(employee);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("ManageEmployees");
+        }
+
     }
 }

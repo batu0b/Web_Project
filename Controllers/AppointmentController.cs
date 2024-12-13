@@ -41,14 +41,24 @@ namespace Odev.Controllers
                     return View(viewModel);
                 }
 
+                // Seçilen servislerin toplam süresi hesaplanıyor
+                var totalDuration = await _context.Services
+                    .Where(s => serviceIds.Contains(s.Id))
+                    .SumAsync(s => s.Duration);
+
+                // Randevunun bitiş zamanı
+                var appointmentEndTime = viewModel.Date.AddMinutes(totalDuration);
+
                 // Çalışan uygunluk kontrolü
                 var isEmployeeAvailable = !await _context.Appointments
-                    .AnyAsync(a => a.EmployeeId == viewModel.EmployeeId &&
-                                   a.AppointmentDate == viewModel.Date);
+                    .Where(a => a.EmployeeId == viewModel.EmployeeId)
+                    .AnyAsync(a =>
+                        (viewModel.Date < a.AppointmentDate.AddMinutes(a.AppointmentServices.Sum(a => a.Service!.Duration)) &&
+                         appointmentEndTime > a.AppointmentDate));
 
                 if (!isEmployeeAvailable)
                 {
-                    ModelState.AddModelError("", "Seçilen çalışan bu tarih ve saat için uygun değil.");
+                    ModelState.AddModelError("", "Seçilen çalışan bu tarih ve saat aralığında uygun değil.");
                     await FillViewDataAsync(null);
                     return View(viewModel);
                 }
@@ -105,7 +115,7 @@ namespace Odev.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetApprovedAppointments()
+        public async Task<IActionResult> GetAppointments()
         {
             // Oturum açmış kullanıcı bilgisi alınıyor
             var user = await _userManager.GetUserAsync(User);
@@ -114,15 +124,15 @@ namespace Odev.Controllers
                 return Unauthorized("Kullanıcı oturumu bulunamadı. Lütfen giriş yapın.");
             }
 
-            // Kullanıcıya ait onaylanmış randevuları getir
-            var approvedAppointments = await _context.Appointments
+            // Kullanıcıya ait tüm randevuları getir
+            var userAppointments = await _context.Appointments
                 .Include(a => a.Employee) // Çalışan bilgilerini dahil et
                 .Include(a => a.AppointmentServices)
                 .ThenInclude(a => a.Service) // Servis bilgilerini dahil et
-                .Where(a => a.UserId == user.Id && a.IsApproved)
+                .Where(a => a.UserId == user.Id)
                 .ToListAsync();
 
-            return View(approvedAppointments); // View'e yönlendir
+            return View(userAppointments); // View'e yönlendir
         }
 
 

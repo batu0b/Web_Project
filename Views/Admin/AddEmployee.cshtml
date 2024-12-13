@@ -3,16 +3,28 @@
 <div class="container mt-5">
     <h2 class="text-center">Yeni Çalışan Ekle</h2>
     <form asp-action="AddEmployee" method="post" class="mt-4">
+        <!-- Çalışan Adı -->
         <div class="mb-3">
             <label asp-for="Name" class="form-label">Çalışan Adı</label>
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
+
+        <!-- Servis Seçimi -->
         <div class="mb-3">
-            <label asp-for="Position" class="form-label">Pozisyon</label>
-            <input asp-for="Position" class="form-control" />
-            <span asp-validation-for="Position" class="text-danger"></span>
+            <label class="form-label">Yapabileceği Servisler</label>
+            <select id="ServiceIds" name="serviceIds" multiple class="form-select">
+                @if (ViewData["Services"] is IEnumerable<Odev.Models.Service> services)
+                {
+                    @foreach (var service in services)
+                    {
+                        <option value="@service.Id">@service.Name (@service.Duration dakika)</option>
+                    }
+                }
+            </select>
         </div>
+
+        <!-- Kaydet Butonu -->
         <button type="submit" class="btn btn-primary w-100">Kaydet</button>
     </form>
 </div>

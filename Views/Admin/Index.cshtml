@@ -4,14 +4,22 @@
 <div class="container mt-5">
     <h2 class="text-center">Admin Paneli</h2>
     <div class="row mt-4">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <a class="btn btn-primary w-100" href="@Url.Action("AddService", "Admin")">Servis Ekle</a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
+            <a class="btn btn-primary w-100" href="@Url.Action("ManageServices", "Admin")">Servisleri Yönet</a>
+        </div>
+        <div class="col-md-3">
             <a class="btn btn-primary w-100" href="@Url.Action("AddEmployee", "Admin")">Çalışan Ekle</a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
+            <a class="btn btn-primary w-100" href="@Url.Action("ManageEmployees", "Admin")">Çalışanları Yönet</a>
+        </div>
+        <br></br>
+        <div class="col-md-3">
             <a class="btn btn-primary w-100" href="@Url.Action("ApproveAppointments", "Admin")">Randevuları Onayla</a>
         </div>
+        
     </div>
 </div>
