@@ -10,6 +10,7 @@ namespace Odev.Models
         public string Name { get; set; } = string.Empty;
 
         [Required]
+        [Range(0.01, 99999.99, ErrorMessage = "Fiyat 0.01 ile 99999.99 arasında olmalıdır.")]
         public decimal Price { get; set; }
 
         [Required]

@@ -135,29 +135,65 @@ namespace Odev.Controllers
             return View(userAppointments); // View'e yönlendir
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAvailableEmployees(DateTime date, string serviceIds)
+        {
+            var serviceIdArray = serviceIds.Split(',').Select(int.Parse).ToArray();
+
+            var availableEmployees = await _context.Employees
+                .Include(e => e.EmployeeServices)
+                .Where(e => e.EmployeeServices.Any(es => serviceIdArray.Contains(es.ServiceId)))
+                .Select(e => new
+                {
+                    id = e.Id,
+                    name = e.Name,
+                    isAvailable = !_context.Appointments
+                        .Any(a => a.EmployeeId == e.Id &&
+                                  date < a.AppointmentDate.AddMinutes(a.AppointmentServices.Sum(a => a.Service!.Duration)) &&
+                                  a.AppointmentDate < date.AddMinutes(480))
+                })
+                .ToListAsync();
+
+            return Json(availableEmployees);
+        }
 
 
-        // ViewData'yı doldurmak için yardımcı metot
-        private async Task FillViewDataAsync(DateTime? selectedDate)
+        private async Task FillViewDataAsync(DateTime? selectedDate, int[]? selectedServiceIds = null)
         {
             ViewData["Services"] = await _context.Services.ToListAsync();
 
-            if (selectedDate.HasValue)
+            if (selectedServiceIds != null && selectedServiceIds.Any())
             {
-                var unavailableEmployeeIds = await _context.Appointments
-                    .Where(a => a.AppointmentDate.Date == selectedDate.Value.Date &&
-                                a.AppointmentDate.Hour == selectedDate.Value.Hour)
-                    .Select(a => a.EmployeeId)
+                var availableEmployees = await _context.Employees
+                    .Include(e => e.EmployeeServices)
+                    .Where(e => e.EmployeeServices.Any(es => selectedServiceIds.Contains(es.ServiceId)))
                     .ToListAsync();
 
-                ViewData["Employees"] = await _context.Employees
-                    .Where(e => !unavailableEmployeeIds.Contains(e.Id))
-                    .ToListAsync();
+                if (selectedDate.HasValue)
+                {
+                    var unavailableEmployeeIds = await _context.Appointments
+                        .Where(a =>
+                            a.AppointmentDate < selectedDate.Value.AddMinutes(480) &&
+                            selectedDate.Value < a.AppointmentDate.AddMinutes(a.AppointmentServices.Sum(a => a.Service.Duration)))
+                        .Select(a => a.EmployeeId)
+                        .ToListAsync();
+
+                    ViewData["Employees"] = availableEmployees
+                        .Where(e => !unavailableEmployeeIds.Contains(e.Id))
+                        .ToList();
+                }
+                else
+                {
+                    ViewData["Employees"] = availableEmployees;
+                }
             }
             else
             {
-                ViewData["Employees"] = await _context.Employees.ToListAsync();
+                ViewData["Employees"] = new List<Employee>();
             }
         }
+
+
     }
+
 }

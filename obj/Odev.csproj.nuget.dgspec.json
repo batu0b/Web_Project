@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ian\\Source\\Repos\\Web_Project\\Odev.csproj": {}
+    "C:\\Users\\batuh\\Desktop\\Web_Odev\\ODEV\\ODEV\\Odev.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ian\\Source\\Repos\\Web_Project\\Odev.csproj": {
+    "C:\\Users\\batuh\\Desktop\\Web_Odev\\ODEV\\ODEV\\Odev.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ian\\Source\\Repos\\Web_Project\\Odev.csproj",
+        "projectUniqueName": "C:\\Users\\batuh\\Desktop\\Web_Odev\\ODEV\\ODEV\\Odev.csproj",
         "projectName": "Odev",
-        "projectPath": "C:\\Users\\ian\\Source\\Repos\\Web_Project\\Odev.csproj",
-        "packagesPath": "C:\\Users\\ian\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ian\\Source\\Repos\\Web_Project\\obj\\",
+        "projectPath": "C:\\Users\\batuh\\Desktop\\Web_Odev\\ODEV\\ODEV\\Odev.csproj",
+        "packagesPath": "C:\\Users\\batuh\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\batuh\\Desktop\\Web_Odev\\ODEV\\ODEV\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
-          "C:\\Users\\ian\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\batuh\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -42,7 +44,7 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "direct"
+          "auditMode": "all"
         },
         "SdkAnalysisLevel": "9.0.100"
       },
@@ -98,7 +100,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }
