@@ -31,108 +31,89 @@ namespace Odev.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AppointmentViewModel viewModel, int[] serviceIds)
         {
-            if (ModelState.IsValid)
-            {
-                // Geçmiş tarih kontrolü
-                if (viewModel.Date < DateTime.Now)
-                {
-                    ModelState.AddModelError("", "Geçmiş bir tarih için randevu oluşturamazsınız.");
-                    await FillViewDataAsync(null);
-                    return View(viewModel);
-                }
-
-                // Seçilen servislerin toplam süresi hesaplanıyor
-                var totalDuration = await _context.Services
-                    .Where(s => serviceIds.Contains(s.Id))
-                    .SumAsync(s => s.Duration);
-
-                // Randevunun bitiş zamanı
-                var appointmentEndTime = viewModel.Date.AddMinutes(totalDuration);
-
-                // Çalışan uygunluk kontrolü
-                var isEmployeeAvailable = !await _context.Appointments
-                    .Where(a => a.EmployeeId == viewModel.EmployeeId)
-                    .AnyAsync(a =>
-                        (viewModel.Date < a.AppointmentDate.AddMinutes(a.AppointmentServices.Sum(a => a.Service!.Duration)) &&
-                         appointmentEndTime > a.AppointmentDate));
-
-                if (!isEmployeeAvailable)
-                {
-                    ModelState.AddModelError("", "Seçilen çalışan bu tarih ve saat aralığında uygun değil.");
-                    await FillViewDataAsync(null);
-                    return View(viewModel);
-                }
-
-                // Kullanıcı bilgisi alınıyor
-                var user = await _userManager.GetUserAsync(User);
-                if (user == null)
-                {
-                    ModelState.AddModelError("", "Kullanıcı oturumu bulunamadı. Lütfen giriş yapın.");
-                    await FillViewDataAsync(null);
-                    return View(viewModel);
-                }
-
-                // Appointment nesnesini doldur
-                var appointment = new Appointment
-                {
-                    AppointmentDate = viewModel.Date,
-                    EmployeeId = viewModel.EmployeeId,
-                    UserId = user.Id,
-                    IsApproved = false, // Varsayılan olarak onaysız
-                    ApprovalDate = null // İlk başta null
-                };
-
-                // Randevu kaydı
-                _context.Appointments.Add(appointment);
-                await _context.SaveChangesAsync();
-
-                // Servislerin kaydedilmesi
-                foreach (var serviceId in serviceIds)
-                {
-                    var appointmentService = new AppointmentService
-                    {
-                        AppointmentId = appointment.Id,
-                        ServiceId = serviceId
-                    };
-                    _context.AppointmentServices.Add(appointmentService);
-                }
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Index", "Home");
-            }
-
-            // Hata mesajlarını logla
             if (!ModelState.IsValid)
             {
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    Console.WriteLine(error.ErrorMessage);
-                }
+                await FillViewDataAsync(null);
+                return View(viewModel);
             }
 
-            await FillViewDataAsync(null);
-            return View(viewModel);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAppointments()
-        {
-            // Oturum açmış kullanıcı bilgisi alınıyor
+            // Kullanıcı bilgisi
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return Unauthorized("Kullanıcı oturumu bulunamadı. Lütfen giriş yapın.");
+                ModelState.AddModelError("", "Kullanıcı oturumu bulunamadı. Lütfen giriş yapın.");
+                await FillViewDataAsync(null);
+                return View(viewModel);
             }
 
-            // Kullanıcıya ait tüm randevuları getir
-            var userAppointments = await _context.Appointments
-                .Include(a => a.Employee) // Çalışan bilgilerini dahil et
-                .Include(a => a.AppointmentServices)
-                .ThenInclude(a => a.Service) // Servis bilgilerini dahil et
-                .Where(a => a.UserId == user.Id)
-                .ToListAsync();
+            // Geçmiş tarih kontrolü
+            if (viewModel.Date < DateTime.Now)
+            {
+                ModelState.AddModelError("", "Geçmiş bir tarih için randevu oluşturamazsınız.");
+                await FillViewDataAsync(null);
+                return View(viewModel);
+            }
 
-            return View(userAppointments); // View'e yönlendir
+            // Seçilen servislerin toplam süresi hesaplanıyor
+            var totalDuration = await _context.Services
+                .Where(s => serviceIds.Contains(s.Id))
+                .SumAsync(s => s.Duration);
+
+            var appointmentEndTime = viewModel.Date.AddMinutes(totalDuration);
+
+            // Kullanıcı musaitlik kontrolü
+            var isUserAvailable = !await _context.Appointments
+                .Where(a => a.UserId == user.Id)
+                .AnyAsync(a =>
+                    (viewModel.Date < a.AppointmentDate.AddMinutes(a.AppointmentServices.Sum(s => s.Service!.Duration)) &&
+                     appointmentEndTime > a.AppointmentDate));
+
+            if (!isUserAvailable)
+            {
+                ModelState.AddModelError("", "Seçilen tarih ve saat aralığında başka bir randevunuz bulunuyor.");
+                await FillViewDataAsync(null);
+                return View(viewModel);
+            }
+
+            // Çalışan uygunluk kontrolü
+            var isEmployeeAvailable = !await _context.Appointments
+                .Where(a => a.EmployeeId == viewModel.EmployeeId)
+                .AnyAsync(a =>
+                    (viewModel.Date < a.AppointmentDate.AddMinutes(a.AppointmentServices.Sum(a => a.Service!.Duration)) &&
+                     appointmentEndTime > a.AppointmentDate));
+
+            if (!isEmployeeAvailable)
+            {
+                ModelState.AddModelError("", "Seçilen çalışan bu tarih ve saat aralığında uygun değil.");
+                await FillViewDataAsync(null);
+                return View(viewModel);
+            }
+
+            // Yeni randevu oluştur
+            var appointment = new Appointment
+            {
+                AppointmentDate = viewModel.Date,
+                UserId = user.Id,
+                EmployeeId = viewModel.EmployeeId,
+                IsApproved = false // Varsayılan olarak onaysız
+            };
+
+            _context.Appointments.Add(appointment);
+            await _context.SaveChangesAsync();
+
+            // Seçilen servisleri randevuya bağla
+            foreach (var serviceId in serviceIds)
+            {
+                var appointmentService = new AppointmentService
+                {
+                    AppointmentId = appointment.Id,
+                    ServiceId = serviceId
+                };
+                _context.AppointmentServices.Add(appointmentService);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -155,6 +136,32 @@ namespace Odev.Controllers
                 .ToListAsync();
 
             return Json(availableEmployees);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CheckUserAvailability(DateTime date, int[] serviceIds)
+        {
+            // Seçilen servislerin toplam süresi hesaplanıyor
+            var totalDuration = await _context.Services
+                .Where(s => serviceIds.Contains(s.Id))
+                .SumAsync(s => s.Duration);
+
+            var appointmentEndTime = date.AddMinutes(totalDuration);
+
+            // Kullanıcının diğer randevularını kontrol et
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Json(new { isAvailable = false, message = "Kullanıcı bulunamadı." });
+            }
+
+            var isUserAvailable = !await _context.Appointments
+                .Where(a => a.UserId == user.Id)
+                .AnyAsync(a =>
+                    (date < a.AppointmentDate.AddMinutes(a.AppointmentServices.Sum(s => s.Service!.Duration)) &&
+                     appointmentEndTime > a.AppointmentDate));
+
+            return Json(new { isAvailable = isUserAvailable });
         }
 
 
@@ -193,6 +200,26 @@ namespace Odev.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAppointments()
+        {
+            // Oturum açmış kullanıcı bilgisi alınıyor
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized("Kullanıcı oturumu bulunamadı. Lütfen giriş yapın.");
+            }
+
+            // Kullanıcıya ait tüm randevuları getir
+            var userAppointments = await _context.Appointments
+                .Include(a => a.Employee) // Çalışan bilgilerini dahil et
+                .Include(a => a.AppointmentServices)
+                .ThenInclude(a => a.Service) // Servis bilgilerini dahil et
+                .Where(a => a.UserId == user.Id)
+                .ToListAsync();
+
+            return View(userAppointments); // View'e yönlendir
+        }
 
     }
 
