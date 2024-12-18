@@ -18,6 +18,8 @@ namespace Odev.Data
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<AppointmentService> AppointmentServices { get; set; }
         public DbSet<EmployeeService> EmployeeServices { get; set; }
+        public DbSet<Salon> Salons { get; set; }
+    
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -52,6 +54,9 @@ namespace Odev.Data
                 .HasOne(es => es.Service)
                 .WithMany(s => s.EmployeeServices)
                 .HasForeignKey(es => es.ServiceId);
+
+            builder.Entity<Salon>()
+        .HasCheckConstraint("CK_Salon_WorkHours", "StartTime < EndTime");
         }
     
 }

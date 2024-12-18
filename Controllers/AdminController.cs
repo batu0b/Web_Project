@@ -22,6 +22,49 @@ namespace Odev.Controllers
             return View();
         }
 
+        public async Task<IActionResult> ManageSalon()
+        {
+            var salon = await _context.Salons.FirstOrDefaultAsync();
+            if (salon == null)
+            {
+                salon = new Salon
+                {
+                    Name = "Varsayılan Salon",
+                    StartTime = TimeSpan.FromHours(8),
+                    EndTime = TimeSpan.FromHours(20)
+                };
+                _context.Salons.Add(salon);
+                await _context.SaveChangesAsync();
+            }
+            return View(salon);
+        }
+
+        public async Task<IActionResult> EditSalon(int id)
+        {
+            var salon = await _context.Salons.FindAsync(id);
+            if (salon == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditSalonModal", salon);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSalon(Salon salon)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Salons.Update(salon);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("ManageSalon");
+            }
+            return PartialView("_EditSalonModal", salon);
+        }
+
+
+
+
         // Servis ekleme işlemleri
         public IActionResult AddService()
         {

@@ -1,0 +1,37 @@
+﻿@model Odev.Models.Salon
+
+<div class="modal-header">
+    <h5 class="modal-title">Çalışma Saatlerini Düzenle</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form asp-action="EditSalon" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <!-- Salon Adı -->
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Salon Adı</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <!-- Çalışma Başlangıç Saati -->
+        <div class="mb-3">
+            <label asp-for="StartTime" class="form-label">Çalışma Başlangıç Saati</label>
+            <input asp-for="StartTime" class="form-control" type="time" />
+            <span asp-validation-for="StartTime" class="text-danger"></span>
+        </div>
+
+        <!-- Çalışma Bitiş Saati -->
+        <div class="mb-3">
+            <label asp-for="EndTime" class="form-label">Çalışma Bitiş Saati</label>
+            <input asp-for="EndTime" class="form-control" type="time" />
+            <span asp-validation-for="EndTime" class="text-danger"></span>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+        </div>
+    </form>
+</div>

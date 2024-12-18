@@ -1,0 +1,44 @@
+﻿@model Odev.Models.Salon
+
+<div class="container mt-5">
+    <h2 class="text-center">Salon Detayları</h2>
+    <div class="table-responsive">
+        <table class="table table-striped mt-4">
+            <tbody>
+                <tr>
+                    <th>Salon Adı</th>
+                    <td>@Model.Name</td>
+                </tr>
+                <tr>
+                    <th>Çalışma Başlangıç Saati</th>
+                    <td>@Model.StartTime</td>
+                </tr>
+                <tr>
+                    <th>Çalışma Bitiş Saati</th>
+                    <td>@Model.EndTime</td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editSalonModal" onclick="loadEditSalonModal(@Model.Id)">Güncelle</button>
+    </div>
+</div>
+
+<!-- Güncelle Modal -->
+<div class="modal fade" id="editSalonModal" tabindex="-1" aria-labelledby="editSalonModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id="editSalonModalContent"></div> <!-- Dinamik içerik burada yüklenecek -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadEditSalonModal(salonId) {
+        $.get(`/Admin/EditSalon/${salonId}`, function (data) {
+            $("#editSalonModalContent").html(data); // Modal içine içeriği yükle
+            $("#editSalonModal").modal('show'); // Modal'ı göster
+        }).fail(function () {
+            alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+        });
+    }
+</script>

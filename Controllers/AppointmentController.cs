@@ -54,19 +54,34 @@ namespace Odev.Controllers
                 return View(viewModel);
             }
 
-            // Seçilen servislerin toplam süresi hesaplanıyor
+            // Salon çalışma saatleri kontrolü
+            var salon = await _context.Salons.FirstOrDefaultAsync();
+            if (salon == null)
+            {
+                ModelState.AddModelError("", "Salon bilgisi bulunamadı. Lütfen yöneticinize başvurun.");
+                return View(viewModel);
+            }
+
+            var appointmentStartTime = viewModel.Date.TimeOfDay;
             var totalDuration = await _context.Services
                 .Where(s => serviceIds.Contains(s.Id))
                 .SumAsync(s => s.Duration);
 
-            var appointmentEndTime = viewModel.Date.AddMinutes(totalDuration);
+            var appointmentEndTime = viewModel.Date.AddMinutes(totalDuration).TimeOfDay;
 
-            // Kullanıcı musaitlik kontrolü
+            if (appointmentStartTime < salon.StartTime || appointmentEndTime > salon.EndTime)
+            {
+                ModelState.AddModelError("", $"Randevu sadece salonun çalışma saatleri içinde yapılabilir: {salon.StartTime} - {salon.EndTime}");
+                await FillViewDataAsync(null);
+                return View(viewModel);
+            }
+
+            // Kullanıcı müsaitlik kontrolü
             var isUserAvailable = !await _context.Appointments
                 .Where(a => a.UserId == user.Id)
                 .AnyAsync(a =>
                     (viewModel.Date < a.AppointmentDate.AddMinutes(a.AppointmentServices.Sum(s => s.Service!.Duration)) &&
-                     appointmentEndTime > a.AppointmentDate));
+                     viewModel.Date.AddMinutes(totalDuration) > a.AppointmentDate));
 
             if (!isUserAvailable)
             {
@@ -80,7 +95,7 @@ namespace Odev.Controllers
                 .Where(a => a.EmployeeId == viewModel.EmployeeId)
                 .AnyAsync(a =>
                     (viewModel.Date < a.AppointmentDate.AddMinutes(a.AppointmentServices.Sum(a => a.Service!.Duration)) &&
-                     appointmentEndTime > a.AppointmentDate));
+                     viewModel.Date.AddMinutes(totalDuration) > a.AppointmentDate));
 
             if (!isEmployeeAvailable)
             {
@@ -115,6 +130,8 @@ namespace Odev.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", "Home");
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> GetAvailableEmployees(DateTime date, string serviceIds)
