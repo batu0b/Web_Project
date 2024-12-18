@@ -7,14 +7,14 @@
         <!-- Tarih ve Saat -->
         <div class="mb-3">
             <label for="Date" class="form-label">Tarih ve Saat</label>
-            <input asp-for="Date" type="datetime-local" class="form-control" id="Date" required onchange="updateEmployeesAndServices()" />
+            <input asp-for="Date" type="datetime-local" class="form-control" id="Date" required />
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
 
         <!-- Servis Seçimi -->
         <div class="mb-3">
             <label for="ServiceIds" class="form-label">Servis Seç</label>
-            <select id="ServiceIds" name="serviceIds" multiple class="form-select" required onchange="updateEmployeesAndServices()">
+            <select id="ServiceIds" name="serviceIds" multiple class="form-select" required>
                 @if (ViewData["Services"] is IEnumerable<Odev.Models.Service> services)
                 {
                     foreach (var service in services)
@@ -25,18 +25,14 @@
             </select>
         </div>
 
+        <!-- Çalışanları Görüntüle Butonu -->
+        <button type="button" class="btn btn-secondary mb-3" id="viewEmployeesButton" onclick="updateEmployees()">Çalışanları Görüntüle</button>
+
         <!-- Çalışan Seçimi -->
         <div class="mb-3">
             <label for="EmployeeId" class="form-label">Çalışan Seç</label>
-            <select asp-for="EmployeeId" class="form-select" id="EmployeeId" required>
+            <select asp-for="EmployeeId" class="form-select" id="EmployeeId" disabled required>
                 <option value="">Çalışan Seçin</option>
-                @if (ViewData["Employees"] is IEnumerable<Odev.Models.Employee> employees)
-                {
-                    foreach (var employee in employees)
-                    {
-                        <option value="@employee.Id" disabled>@employee.Name</option>
-                    }
-                }
             </select>
             <span asp-validation-for="EmployeeId" class="text-danger"></span>
         </div>
@@ -47,46 +43,30 @@
 </div>
 
 <script>
-    async function updateEmployeesAndServices() {
+    async function updateEmployees() {
         const date = document.getElementById('Date').value;
         const serviceIds = Array.from(document.getElementById('ServiceIds').selectedOptions).map(option => option.value);
 
-        if (date && serviceIds.length > 0) {
-            // Çalışanları güncelle
-            const response = await fetch(`/Appointment/GetAvailableEmployees?date=${date}&serviceIds=${serviceIds.join(',')}`);
-            const employees = await response.json();
-
-            const employeeSelect = document.getElementById('EmployeeId');
-            employeeSelect.innerHTML = '';
-
-            employees.forEach(employee => {
-                const option = document.createElement('option');
-                option.value = employee.id;
-                option.textContent = `${employee.name} ${employee.isAvailable ? '' : '(Meşgul)'}`;
-                option.disabled = !employee.isAvailable;
-                employeeSelect.appendChild(option);
-            });
-
-            // Kullanıcı musaitlik kontrolü
-            await updateUserAvailability();
+        if (!date || serviceIds.length === 0) {
+            alert('Lütfen tarih ve servis seçin.');
+            return;
         }
+
+        const response = await fetch(`/Appointment/GetAvailableEmployees?date=${date}&serviceIds=${serviceIds.join(',')}`);
+        const employees = await response.json();
+
+        const employeeSelect = document.getElementById('EmployeeId');
+        employeeSelect.innerHTML = '';
+
+        employees.forEach(employee => {
+            const option = document.createElement('option');
+            option.value = employee.id;
+            option.textContent = `${employee.name} ${employee.isAvailable ? '' : '(Meşgul)'}`;
+            option.disabled = !employee.isAvailable;
+            employeeSelect.appendChild(option);
+        });
+
+        // Aktif hale getir
+        employeeSelect.disabled = false;
     }
-
-    async function updateUserAvailability() {
-        const date = document.getElementById('Date').value;
-        const serviceIds = Array.from(document.getElementById('ServiceIds').selectedOptions).map(option => option.value);
-
-        if (date && serviceIds.length > 0) {
-            const response = await fetch(`/Appointment/CheckUserAvailability?date=${date}&serviceIds=${serviceIds.join(',')}`);
-            const result = await response.json();
-
-            if (!result.isAvailable) {
-                alert('Seçilen tarih ve saat aralığında başka bir randevunuz bulunuyor.');
-                document.getElementById('Date').value = ''; // Tarihi sıfırla
-            }
-        }
-    }
-
-    document.getElementById('Date').addEventListener('change', updateEmployeesAndServices);
-    document.getElementById('ServiceIds').addEventListener('change', updateEmployeesAndServices);
 </script>

@@ -119,24 +119,58 @@ namespace Odev.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAvailableEmployees(DateTime date, string serviceIds)
         {
+            // 1. `serviceIdArray`'yi oluştur ve kontrol et
             var serviceIdArray = serviceIds.Split(',').Select(int.Parse).ToArray();
+            Console.WriteLine($"Service ID Array: {string.Join(",", serviceIdArray)}");
 
-            var availableEmployees = await _context.Employees
+            // 2. Tüm çalışanları ve ilişkili servislerini getir
+            var employees = await _context.Employees
                 .Include(e => e.EmployeeServices)
-                .Where(e => e.EmployeeServices.Any(es => serviceIdArray.Contains(es.ServiceId)))
+                .ToListAsync();
+
+            // Debug: Çalışanları ve servislerini yazdır
+            foreach (var employee in employees)
+            {
+                var employeeServiceIds = employee.EmployeeServices.Select(es => es.ServiceId).ToList();
+                Console.WriteLine($"Employee: {employee.Name}, Services: {string.Join(",", employeeServiceIds)}");
+            }
+
+            // 3. Çalışanları servis ID'lerine göre filtrele
+            var filteredEmployees = employees
+                .Where(e =>
+                    serviceIdArray.All(serviceId => e.EmployeeServices.Any(es => es.ServiceId == serviceId))
+                )
+                .ToList();
+
+            // Debug: Filtrelenmiş çalışanları yazdır
+            foreach (var employee in filteredEmployees)
+            {
+                Console.WriteLine($"Filtered Employee: {employee.Name}");
+            }
+
+            // 4. Çalışanların uygunluk durumunu kontrol et
+            var availableEmployees = filteredEmployees
                 .Select(e => new
                 {
                     id = e.Id,
                     name = e.Name,
                     isAvailable = !_context.Appointments
                         .Any(a => a.EmployeeId == e.Id &&
-                                  date < a.AppointmentDate.AddMinutes(a.AppointmentServices.Sum(a => a.Service!.Duration)) &&
+                                  date < a.AppointmentDate.AddMinutes(a.AppointmentServices.Sum(s => s.Service!.Duration)) &&
                                   a.AppointmentDate < date.AddMinutes(480))
                 })
-                .ToListAsync();
+                .ToList();
 
+            // Debug: Uygunluk durumlarını yazdır
+            foreach (var employee in availableEmployees)
+            {
+                Console.WriteLine($"Employee: {employee.name}, Is Available: {employee.isAvailable}");
+            }
+
+            // 5. Sonucu JSON olarak döndür
             return Json(availableEmployees);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> CheckUserAvailability(DateTime date, int[] serviceIds)
