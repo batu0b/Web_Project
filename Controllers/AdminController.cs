@@ -254,7 +254,7 @@ namespace Odev.Controllers
                         };
                         _context.EmployeeServices.Add(newEmployeeService);
                     }
-                }
+                }//jjjj
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction("ManageEmployees");
@@ -278,7 +278,7 @@ namespace Odev.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("ManageEmployees");
         }
-        public async Task<IActionResult> EmployeeEarnings()
+        public async Task<IActionResult> EmployeeEarnings()//k
         {
             var employeeEarnings = await _context.Employees
                 .Include(e => e.Appointments)
@@ -288,7 +288,7 @@ namespace Odev.Controllers
                 {
                     EmployeeName = e.Name,
                     TotalEarnings = e.Appointments
-                        .SelectMany(a => a.AppointmentServices)
+                        .SelectMany(a => a.AppointmentServices)//j
                         .Sum(a => a.Service.Price)
                 })
                 .ToListAsync();
