@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Odev.Data;
 using Odev.Models;
 using Microsoft.EntityFrameworkCore;
+using Odev.ViewModels;
 
 namespace Odev.Controllers
 {
@@ -277,6 +278,30 @@ namespace Odev.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("ManageEmployees");
         }
+        public async Task<IActionResult> EmployeeEarnings()
+        {
+            var employeeEarnings = await _context.Employees
+                .Include(e => e.Appointments)
+                .ThenInclude(a => a.AppointmentServices)
+                .ThenInclude(a => a.Service)
+                .Select(e => new
+                {
+                    EmployeeName = e.Name,
+                    TotalEarnings = e.Appointments
+                        .SelectMany(a => a.AppointmentServices)
+                        .Sum(a => a.Service.Price)
+                })
+                .ToListAsync();
+
+            var earningsViewModel = employeeEarnings.Select(e => new EmployeeEarningsViewModel
+            {
+                EmployeeName = e.EmployeeName,
+                TotalEarnings = e.TotalEarnings
+            }).ToList();
+
+            return View(earningsViewModel);
+        }
+
 
     }
 }

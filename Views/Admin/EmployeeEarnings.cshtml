@@ -1,0 +1,22 @@
+﻿@model IEnumerable<Odev.ViewModels.EmployeeEarningsViewModel>
+
+<div class="container mt-5">
+    <h2 class="text-center">Çalışanların Kazançları</h2>
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Çalışan Adı</th>
+                <th>Toplam Kazanç (₺)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td>@employee.EmployeeName</td>
+                    <td>@employee.TotalEarnings.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
