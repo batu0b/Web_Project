@@ -80,6 +80,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRcR2V0QXBwb2ludG1lbnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/ian/Source/Repos/Web_Project/Views/Appointment/Result.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRcUmVzdWx0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ian/Source/Repos/Web_Project/Views/Appointment/UploadImage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXBwb2ludG1lbnRcVXBsb2FkSW1hZ2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/ian/Source/Repos/Web_Project/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

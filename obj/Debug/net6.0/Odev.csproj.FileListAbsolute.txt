@@ -88,3 +88,4 @@ C:\Users\ian\Source\Repos\Web_Project\obj\Debug\net6.0\refint\Odev.dll
 C:\Users\ian\Source\Repos\Web_Project\obj\Debug\net6.0\Odev.pdb
 C:\Users\ian\Source\Repos\Web_Project\obj\Debug\net6.0\Odev.genruntimeconfig.cache
 C:\Users\ian\Source\Repos\Web_Project\obj\Debug\net6.0\ref\Odev.dll
+C:\Users\ian\Source\Repos\Web_Project\bin\Debug\net6.0\Newtonsoft.Json.dll

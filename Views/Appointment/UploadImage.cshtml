@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Upload Picture";
+}
+
+<h2>Yüz Şeklini ve Uyan Saç Modellerini Görmek İster misin?</h2>
+
+<form asp-controller="Appointment" asp-action="UploadImage" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="image" class="form-label">Yüz Resmini Yükle:</label>
+        <input type="file" name="image" id="image" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Gönder</button>
+</form>

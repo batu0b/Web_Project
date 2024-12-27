@@ -5,6 +5,9 @@ using Odev.Data;
 using Odev.Models;
 using Microsoft.EntityFrameworkCore;
 using Odev.ViewModels;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+
 
 namespace Odev.Controllers
 {
@@ -272,6 +275,45 @@ namespace Odev.Controllers
             return View(userAppointments); // View'e yönlendir
         }
 
-    }
+        [HttpGet]
+        public IActionResult UploadImage()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadImage(IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+            {
+                ModelState.AddModelError("", "Lütfen bir resim yükleyin.");
+                return View("UploadImage");
+            }
+
+            using var httpClient = new HttpClient();
+            using var formData = new MultipartFormDataContent();
+
+            // Attach image
+            using var stream = new MemoryStream();
+            await image.CopyToAsync(stream);
+            var content = new ByteArrayContent(stream.ToArray());
+            content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+            formData.Add(content, "image", image.FileName);
+
+            // Send API request
+            var response = await httpClient.PostAsync("http://node-js-faceshape.onrender.com/api/ai", formData);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                return View("Result", jsonResponse);
+            }
+            else
+            {
+                ModelState.AddModelError("", "API isteği başarısız oldu.");
+                return View("UploadImage");
+            }
+        }
+    }
 }

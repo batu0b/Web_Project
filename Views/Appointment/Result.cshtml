@@ -1,0 +1,40 @@
+﻿@model string
+
+@{
+    ViewData["Title"] = "AI Analysis Result";
+    var jsonResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(Model);
+    var shapes = jsonResponse?.data?.shapes;
+    var suggestions = jsonResponse?.data?.suggestions;
+}
+
+<h2>Barber AI</h2>
+
+@if (shapes != null && suggestions != null)
+{
+    <h3>Yüz Şekilleri ve Olasılıklar</h3>
+    <ul style="display: flex; flex-direction: row; justify-content: space-around; gap: 10px;">
+        @foreach (var shape in shapes)
+        {
+            <li>
+                <strong>@shape.className:</strong>
+                @String.Format("{0:P2}", Convert.ToDouble(shape.probability))
+            </li>
+        }
+    </ul>
+
+    <h3>Önerilen Saç Modelleri</h3>
+    <div style="display: flex; flex-direction: row; justify-content: space-around; align-items: center; background-color: #eeeeee;">
+        @foreach (var suggestion in suggestions)
+        {
+            <div style="margin-bottom: 20px;">
+                <img src="@suggestion" alt="Saç Modeli" style="width: 200px; height: auto;" />
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>API yanıtı işlenemedi veya eksik bilgiler içeriyor.</p>
+}
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-primary">Ana Sayfaya Dön</a>

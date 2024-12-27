@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "RVHRTkg3Vpc=",
+  "dgSpecHash": "Rru0OYU0Awk=",
   "success": true,
   "projectFilePath": "C:\\Users\\ian\\Source\\Repos\\Web_Project\\Odev.csproj",
   "expectedPackageFiles": [
@@ -26,6 +26,7 @@
     "C:\\Users\\ian\\.nuget\\packages\\microsoft.extensions.options\\6.0.0\\microsoft.extensions.options.6.0.0.nupkg.sha512",
     "C:\\Users\\ian\\.nuget\\packages\\microsoft.extensions.primitives\\6.0.0\\microsoft.extensions.primitives.6.0.0.nupkg.sha512",
     "C:\\Users\\ian\\.nuget\\packages\\mysqlconnector\\2.0.0\\mysqlconnector.2.0.0.nupkg.sha512",
+    "C:\\Users\\ian\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\ian\\.nuget\\packages\\pomelo.entityframeworkcore.mysql\\6.0.0\\pomelo.entityframeworkcore.mysql.6.0.0.nupkg.sha512",
     "C:\\Users\\ian\\.nuget\\packages\\system.collections.immutable\\6.0.0\\system.collections.immutable.6.0.0.nupkg.sha512",
     "C:\\Users\\ian\\.nuget\\packages\\system.diagnostics.diagnosticsource\\6.0.0\\system.diagnostics.diagnosticsource.6.0.0.nupkg.sha512",
